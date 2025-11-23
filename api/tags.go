@@ -4,7 +4,7 @@ import (
 	"context"
 	"errors"
 
-	"github.com/RasmusLindroth/go-mastodon"
+	"github.com/blacklight/go-mastodon"
 )
 
 func (ac *AccountClient) FollowTag(tag string) error {

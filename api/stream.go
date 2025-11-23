@@ -4,7 +4,7 @@ import (
 	"context"
 	"sync"
 
-	"github.com/RasmusLindroth/go-mastodon"
+	"github.com/blacklight/go-mastodon"
 )
 
 type MastodonType uint

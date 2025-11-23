@@ -8,7 +8,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/RasmusLindroth/go-mastodon"
+	"github.com/blacklight/go-mastodon"
 	"github.com/adrg/xdg"
 	"github.com/microcosm-cc/bluemonday"
 	"github.com/rivo/tview"

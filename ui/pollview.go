@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/RasmusLindroth/go-mastodon"
+	"github.com/blacklight/go-mastodon"
 	"github.com/gdamore/tcell/v2"
 	"github.com/rivo/tview"
 )

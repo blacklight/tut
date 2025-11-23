@@ -5,7 +5,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/RasmusLindroth/go-mastodon"
+	"github.com/blacklight/go-mastodon"
 	"github.com/rivo/tview"
 )
 
