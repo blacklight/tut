@@ -198,6 +198,7 @@ type General struct {
 	ShowBoostedUser     bool
 	DynamicTimelineName bool
 	CommandsInNewPane   bool
+	DefaultContentType  string
 }
 
 type Style struct {
@@ -501,6 +502,7 @@ type Input struct {
 	ComposeVisibility           Key
 	ComposeLanguage             Key
 	ComposePoll                 Key
+	ComposeFormat               Key
 
 	MediaDelete   Key
 	MediaEditDesc Key
@@ -1345,6 +1347,7 @@ func parseInput(cfg InputTOML) Input {
 	ic.ComposeToggleContentWarning = inputOrDef("compose-toggle-content-warning", cfg.ComposeToggleContentWarning, def.ComposeToggleContentWarning, false)
 	ic.ComposeVisibility = inputOrDef("compose-visibility", cfg.ComposeVisibility, def.ComposeVisibility, false)
 	ic.ComposeLanguage = inputOrDef("compose-language", cfg.ComposeLanguage, def.ComposeLanguage, false)
+	ic.ComposeFormat = inputOrDef("compose-format", cfg.ComposeFormat, def.ComposeFormat, false)
 	ic.ComposePoll = inputOrDef("compose-poll", cfg.ComposePoll, def.ComposePoll, false)
 
 	ic.MediaDelete = inputOrDef("media-delete", cfg.MediaDelete, def.MediaDelete, false)

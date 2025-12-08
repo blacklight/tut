@@ -8,6 +8,7 @@ type ConfigTOML struct {
 	OpenCustom         OpenCustomTOML    `toml:"open-custom"`
 	NotificationConfig NotificationsTOML `toml:"desktop-notification"`
 	Input              InputTOML         `toml:"input"`
+	DefaultContentType string 			 `toml:"default-content-type"` // e.g. "text/plain" or "text/markdown"
 }
 
 type GeneralTOML struct {
@@ -38,6 +39,7 @@ type GeneralTOML struct {
 	ShowBoostedUser     *bool               `toml:"show-boosted-user"`
 	DynamicTimelineName *bool               `toml:"dynamic-timeline-name"`
 	CommandsInNewPane   *bool               `toml:"commands-in-new-pane"`
+	DefaultContentType  string 				`toml:"default-content-type"`
 }
 
 type TimelineTOML struct {
@@ -231,6 +233,7 @@ type InputTOML struct {
 	ComposeVisibility           *KeyHintTOML `toml:"compose-visibility"`
 	ComposeLanguage             *KeyHintTOML `toml:"compose-language"`
 	ComposePoll                 *KeyHintTOML `toml:"compose-poll"`
+	ComposeFormat      			*KeyHintTOML `toml:"compose-format"`
 
 	MediaDelete   *KeyHintTOML `toml:"media-delete"`
 	MediaEditDesc *KeyHintTOML `toml:"media-edit-desc"`

@@ -365,6 +365,10 @@ var ConfigDefault = ConfigTOML{
 			Hint: sp("P[O]ll"),
 			Keys: &[]string{"o", "O"},
 		},
+		ComposeFormat: &KeyHintTOML{
+			Hint: sp("[F]ormat"),
+			Keys: &[]string{"f", "F"},
+		},
 		MediaDelete: &KeyHintTOML{
 			Hint: sp("[D]elete"),
 			Keys: &[]string{"d", "D"},

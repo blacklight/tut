@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"reflect"
 	"strings"
 	"time"
 
@@ -30,6 +31,7 @@ type msgToot struct {
 	QuoteIncluded bool
 	Visibility    string
 	Language      string
+	ContentType   string
 }
 
 type ComposeView struct {
@@ -44,6 +46,7 @@ type ComposeView struct {
 	controls     *tview.Flex
 	visibility   *tview.DropDown
 	lang         *tview.DropDown
+	format       *tview.DropDown
 	media        *MediaList
 	msg          *msgToot
 }
@@ -73,8 +76,37 @@ func NewComposeView(tv *TutView) *ComposeView {
 		info:         NewTextView(tv.tut.Config),
 		visibility:   NewDropDown(tv.tut.Config),
 		lang:         NewDropDown(tv.tut.Config),
+		format:       NewDropDown(tv.tut.Config),
 		media:        NewMediaList(tv),
+		// initialize the message early to avoid nil deref in callbacks
+		msg: &msgToot{},
 	}
+
+	// set format options and handler
+	cv.format.SetLabel("Format: ")
+	cv.format.SetOptions([]string{"Text (text/plain)", "Markdown (text/markdown)"}, func(text string, index int) {
+		switch index {
+		case 1:
+			cv.msg.ContentType = "text/markdown"
+		default:
+			cv.msg.ContentType = "text/plain"
+		}
+		cv.UpdateContent()
+	})
+
+	// set default based on config (if present) otherwise default to text/plain
+	if tv.tut.Config != nil && tv.tut.Config.General.DefaultContentType != "" {
+		cv.msg.ContentType = tv.tut.Config.General.DefaultContentType
+		if cv.msg.ContentType == "text/markdown" {
+			cv.format.SetCurrentOption(1)
+		} else {
+			cv.format.SetCurrentOption(0)
+		}
+	} else {
+		cv.msg.ContentType = "text/plain"
+		cv.format.SetCurrentOption(0)
+	}
+
 	cv.content.SetDynamicColors(true)
 	cv.View = newComposeUI(cv)
 	return cv
@@ -93,6 +125,7 @@ func newComposeUI(cv *ComposeView) *tview.Flex {
 			AddItem(tview.NewFlex().SetDirection(tview.FlexRow).
 				AddItem(cv.visibility, 1, 0, false).
 				AddItem(cv.lang, 1, 0, false).
+				AddItem(cv.format, 1, 0, false).
 				AddItem(cv.info, 5, 0, false).
 				AddItem(cv.media.View, 0, 1, false), 0, 1, false), 0, 1, false).
 			AddItem(cv.input.View, 1, 0, false).
@@ -172,6 +205,7 @@ func (cv *ComposeView) SetControls(ctrl ComposeControls) {
 		items = append(items, NewControl(cv.tutView.tut.Config, cv.tutView.tut.Config.Input.ComposeMediaFocus, true))
 		items = append(items, NewControl(cv.tutView.tut.Config, cv.tutView.tut.Config.Input.ComposePoll, true))
 		items = append(items, NewControl(cv.tutView.tut.Config, cv.tutView.tut.Config.Input.ComposeLanguage, true))
+		items = append(items, NewControl(cv.tutView.tut.Config, cv.tutView.tut.Config.Input.ComposeFormat, true))
 		if cv.msg.Reply != nil {
 			items = append(items, NewControl(cv.tutView.tut.Config, cv.tutView.tut.Config.Input.ComposeIncludeQuote, true))
 		}
@@ -237,6 +271,42 @@ func (cv *ComposeView) SetStatus(reply *mastodon.Status, edit *mastodon.Status) 
 		msg.ID = source.ID
 		msg.Text = source.Text
 		msg.CWText = source.SpoilerText
+
+		// update the dropdown selection to reflect the msg.ContentType:
+		if cv.msg.ContentType == "text/markdown" {
+			cv.format.SetCurrentOption(1)
+		} else {
+			cv.format.SetCurrentOption(0)
+		}
+
+		// Attempt to preserve ContentType from the fetched source if it exists.
+		// Some client libraries expose Source.ContentType; others don't.
+		// Use reflection so this code compiles regardless of whether the client type contains the field.
+		preserved := ""
+		v := reflect.ValueOf(source)
+		if v.IsValid() {
+			// if pointer, get element
+			if v.Kind() == reflect.Ptr {
+				v = v.Elem()
+			}
+			if v.IsValid() && v.Kind() == reflect.Struct {
+				f := v.FieldByName("ContentType")
+				if f.IsValid() && f.Kind() == reflect.String {
+					preserved = f.String()
+				}
+			}
+		}
+		if preserved != "" {
+			msg.ContentType = preserved
+		} else {
+			// fall back to configured default or html
+			if cv.tutView.tut.Config != nil && cv.tutView.tut.Config.General.DefaultContentType != "" {
+				msg.ContentType = cv.tutView.tut.Config.General.DefaultContentType
+			} else {
+				msg.ContentType = "text/plain"
+			}
+		}
+
 		for _, mid := range edit.MediaAttachments {
 			msg.MediaIDs = append(msg.MediaIDs, mid.ID)
 		}
@@ -345,10 +415,27 @@ func (cv *ComposeView) ToggleCW() {
 }
 
 func (cv *ComposeView) UpdateContent() {
-	cv.info.SetText(fmt.Sprintf("Chars left: %d\nCW: %t\nHas poll: %t\n", cv.msgLength(), cv.msg.Sensitive, cv.tutView.PollView.HasPoll()))
-	normal := config.ColorMark(cv.tutView.tut.Config.Style.Text)
-	subtleColor := config.ColorMark(cv.tutView.tut.Config.Style.Subtle)
-	warningColor := config.ColorMark(cv.tutView.tut.Config.Style.WarningText)
+	// Safely determine whether there is a poll (PollView may be nil during init)
+	hasPoll := false
+	if cv != nil && cv.tutView != nil && cv.tutView.PollView != nil {
+		// PollView.HasPoll might still access internal fields, but only call it when PollView is set
+		hasPoll = cv.tutView.PollView.HasPoll()
+	}
+
+	// Safely retrieve colors (config may not be fully initialized during early init)
+	var normal, subtleColor, warningColor string
+	if cv != nil && cv.tutView != nil && cv.tutView.tut != nil && cv.tutView.tut.Config != nil {
+		normal = config.ColorMark(cv.tutView.tut.Config.Style.Text)
+		subtleColor = config.ColorMark(cv.tutView.tut.Config.Style.Subtle)
+		warningColor = config.ColorMark(cv.tutView.tut.Config.Style.WarningText)
+	} else {
+		normal, subtleColor, warningColor = "", "", ""
+	}
+
+	// Update info text (safe to call even if PollView is nil)
+	if cv.info != nil {
+		cv.info.SetText(fmt.Sprintf("Chars left: %d\nCW: %t\nHas poll: %t\n", cv.msgLength(), cv.msg.Sensitive, hasPoll))
+	}
 
 	var outputHead string
 	var output string
@@ -370,7 +457,7 @@ func (cv *ComposeView) UpdateContent() {
 	}
 
 	if !cv.tutView.tut.Config.General.UseInternalEditor {
-		if cv.msg.Sensitive && cv.msg.CWText != "" {
+		if cv.msg.Sensitive && cv.tutView.tut != nil && cv.msg.CWText != "" {
 			outputHead += subtleColor + "Content warning\n\n" + normal
 			outputHead += tview.Escape(cv.msg.CWText)
 			outputHead += "\n\n" + subtleColor + "---hidden content below---\n\n" + normal
@@ -380,7 +467,9 @@ func (cv *ComposeView) UpdateContent() {
 		output = strings.TrimSpace(outputHead)
 	}
 
-	cv.content.SetText(output)
+	if cv.content != nil {
+		cv.content.SetText(output)
+	}
 }
 
 func (cv *ComposeView) IncludeQuote() {
@@ -514,20 +603,74 @@ func (cv *ComposeView) FocusLang() {
 	cv.tutView.tut.App.QueueEvent(ev)
 }
 
+func (cv *ComposeView) formatInput(event *tcell.EventKey) *tcell.EventKey {
+	if cv.tutView.tut.Config.Input.GlobalDown.Match(event.Key(), event.Rune()) {
+		return tcell.NewEventKey(tcell.KeyDown, 0, tcell.ModNone)
+	}
+	if cv.tutView.tut.Config.Input.GlobalUp.Match(event.Key(), event.Rune()) {
+		return tcell.NewEventKey(tcell.KeyUp, 0, tcell.ModNone)
+	}
+	if cv.tutView.tut.Config.Input.GlobalExit.Match(event.Key(), event.Rune()) ||
+		cv.tutView.tut.Config.Input.GlobalBack.Match(event.Key(), event.Rune()) {
+		cv.exitFormat()
+		return nil
+	}
+	return event
+}
+
+func (cv *ComposeView) exitFormat() {
+	cv.tutView.tut.App.SetInputCapture(cv.tutView.Input)
+	cv.tutView.tut.App.SetFocus(cv.content)
+}
+
+func (cv *ComposeView) FocusFormat() {
+	cv.tutView.tut.App.SetInputCapture(cv.formatInput)
+	cv.tutView.tut.App.SetFocus(cv.format)
+	ev := tcell.NewEventKey(tcell.KeyDown, 0, tcell.ModNone)
+	cv.tutView.tut.App.QueueEvent(ev)
+}
+
 func (cv *ComposeView) Post() {
 	toot := cv.msg
+	sendText := strings.TrimSpace(toot.Text)
+	sendCW := strings.TrimSpace(toot.CWText)
 	send := mastodon.Toot{
-		Status: strings.TrimSpace(toot.Text),
+		Status: sendText,
+		InReplyToID: "",
+		QuoteID:     nil,
+		MediaIDs:    []mastodon.ID{},
+		Sensitive:   toot.Sensitive,
+		SpoilerText: sendCW,
+		Visibility:  toot.Visibility,
+		ContentType: toot.ContentType,
+		Poll:        nil,
+		ScheduledAt: nil,
+		Language:    toot.Language,
 	}
 	if toot.Reply != nil {
-		send.InReplyToID = toot.Reply.ID
+		id := mastodon.ID(toot.Reply.ID)
+		send.InReplyToID = id
 	}
 	if toot.Edit != nil && toot.Edit.InReplyToID != nil {
-		send.InReplyToID = mastodon.ID(toot.Edit.InReplyToID.(string))
+		var id = mastodon.ID(toot.Edit.InReplyToID.(string))
+		send.InReplyToID = id
 	}
 	if toot.Sensitive {
 		send.Sensitive = true
 		send.SpoilerText = toot.CWText
+	}
+	if len(toot.MediaIDs) > 0 {
+		// convert []mastodon.ID (if your msg uses same type) into send.MediaIDs
+		send.MediaIDs = make([]mastodon.ID, 0, len(toot.MediaIDs))
+		for _, mid := range toot.MediaIDs {
+			send.MediaIDs = append(send.MediaIDs, mid)
+		}
+	}
+	if toot.ContentType != "" {
+		send.ContentType = toot.ContentType
+	} else {
+		// fallback default
+		send.ContentType = "text/plain"
 	}
 
 	if cv.HasMedia() {

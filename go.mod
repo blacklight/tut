@@ -5,7 +5,10 @@ go 1.18
 require (
 	github.com/adrg/xdg v0.4.0
 	github.com/atotto/clipboard v0.1.4
-	github.com/blacklight/go-mastodon v0.0.23
+	// TODO Replace this with github.com/RasmusLindroth/go-mastodon again and the
+	// appropriate tag once https://github.com/RasmusLindroth/go-mastodon/pull/2
+	// is merged
+	github.com/blacklight/go-mastodon v0.0.27
 	github.com/gdamore/tcell/v2 v2.5.4
 	github.com/gen2brain/beeep v0.0.0-20220909211152-5a9ec94374f6
 	github.com/gobwas/glob v0.2.3
