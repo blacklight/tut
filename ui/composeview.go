@@ -63,6 +63,10 @@ var visibilitiesStr = []string{
 	mastodon.VisibilityFollowersOnly,
 	mastodon.VisibilityDirectMessage,
 }
+var contentTypes = []string{
+	"text/plain",
+	"text/markdown",
+}
 
 func NewComposeView(tv *TutView) *ComposeView {
 	cv := &ComposeView{
@@ -82,25 +86,19 @@ func NewComposeView(tv *TutView) *ComposeView {
 		msg: &msgToot{},
 	}
 
-	// set format options and handler
-	cv.format.SetLabel("Format: ")
-	cv.format.SetOptions([]string{"Text (text/plain)", "Markdown (text/markdown)"}, func(text string, index int) {
-		switch index {
-		case 1:
-			cv.msg.ContentType = "text/markdown"
-		default:
-			cv.msg.ContentType = "text/plain"
-		}
-		cv.UpdateContent()
-	})
-
 	// set default based on config (if present) otherwise default to text/plain
 	if tv.tut.Config != nil && tv.tut.Config.General.DefaultContentType != "" {
 		cv.msg.ContentType = tv.tut.Config.General.DefaultContentType
-		if cv.msg.ContentType == "text/markdown" {
-			cv.format.SetCurrentOption(1)
-		} else {
-			cv.format.SetCurrentOption(0)
+		var ctIndex int = -1
+		for i, ct := range contentTypes {
+			if cv.msg.ContentType == ct {
+				ctIndex = i
+				break
+			}
+		}
+
+		if ctIndex >= 0 {
+			cv.format.SetCurrentOption(ctIndex)
 		}
 	} else {
 		cv.msg.ContentType = "text/plain"
@@ -147,6 +145,7 @@ func newComposeUI(cv *ComposeView) *tview.Flex {
 			AddItem(tview.NewFlex().SetDirection(tview.FlexRow).
 				AddItem(cv.visibility, 1, 0, false).
 				AddItem(cv.lang, 1, 0, false).
+				AddItem(cv.format, 1, 0, false).
 				AddItem(cv.info, 5, 0, false).
 				AddItem(cv.media.View, 0, 1, false), 0, 1, false), 0, 1, false).
 			AddItem(cv.input.View, 1, 0, false).
@@ -272,17 +271,10 @@ func (cv *ComposeView) SetStatus(reply *mastodon.Status, edit *mastodon.Status) 
 		msg.Text = source.Text
 		msg.CWText = source.SpoilerText
 
-		// update the dropdown selection to reflect the msg.ContentType:
-		if cv.msg.ContentType == "text/markdown" {
-			cv.format.SetCurrentOption(1)
-		} else {
-			cv.format.SetCurrentOption(0)
-		}
-
 		// Attempt to preserve ContentType from the fetched source if it exists.
 		// Some client libraries expose Source.ContentType; others don't.
 		// Use reflection so this code compiles regardless of whether the client type contains the field.
-		preserved := ""
+		preservedContentType := ""
 		v := reflect.ValueOf(source)
 		if v.IsValid() {
 			// if pointer, get element
@@ -292,14 +284,14 @@ func (cv *ComposeView) SetStatus(reply *mastodon.Status, edit *mastodon.Status) 
 			if v.IsValid() && v.Kind() == reflect.Struct {
 				f := v.FieldByName("ContentType")
 				if f.IsValid() && f.Kind() == reflect.String {
-					preserved = f.String()
+					preservedContentType = f.String()
 				}
 			}
 		}
-		if preserved != "" {
-			msg.ContentType = preserved
+		if preservedContentType != "" {
+			msg.ContentType = preservedContentType
 		} else {
-			// fall back to configured default or html
+			// fall back to configured default or plain text
 			if cv.tutView.tut.Config != nil && cv.tutView.tut.Config.General.DefaultContentType != "" {
 				msg.ContentType = cv.tutView.tut.Config.General.DefaultContentType
 			} else {
@@ -321,6 +313,13 @@ func (cv *ComposeView) SetStatus(reply *mastodon.Status, edit *mastodon.Status) 
 		}
 
 		cv.msg = msg
+	} else {
+		// Set the ContentType to the default for new toots
+		if cv.tutView.tut.Config != nil && cv.tutView.tut.Config.General.DefaultContentType != "" {
+			cv.msg.ContentType = cv.tutView.tut.Config.General.DefaultContentType
+		} else {
+			cv.msg.ContentType = "text/plain"
+		}
 	}
 
 	if cv.tutView.tut.Config.General.QuoteReply && edit == nil {
@@ -337,6 +336,18 @@ func (cv *ComposeView) SetStatus(reply *mastodon.Status, edit *mastodon.Status) 
 	cv.visibility.SetOptions(visibilitiesStr, cv.visibilitySelected)
 	cv.visibility.SetCurrentOption(index)
 	cv.visibility.SetInputCapture(cv.visibilityInput)
+
+	cv.format.SetLabel("Format: ")
+	index = 0
+	for i, ct := range contentTypes {
+		if cv.msg.ContentType == ct {
+			index = i
+			break
+		}
+	}
+	cv.format.SetOptions(contentTypes, cv.formatSelected)
+	cv.format.SetCurrentOption(index)
+	cv.format.SetInputCapture(cv.formatInput)
 
 	cv.lang.SetLabel("Lang: ")
 	langStrs := []string{}
@@ -546,6 +557,7 @@ func (cv *ComposeView) visibilityInput(event *tcell.EventKey) *tcell.EventKey {
 	if cv.tutView.tut.Config.Input.GlobalExit.Match(event.Key(), event.Rune()) ||
 		cv.tutView.tut.Config.Input.GlobalBack.Match(event.Key(), event.Rune()) {
 		cv.exitVisibility()
+		cv.exitFormat()
 		return nil
 	}
 	return event
@@ -559,6 +571,18 @@ func (cv *ComposeView) exitVisibility() {
 func (cv *ComposeView) visibilitySelected(s string, index int) {
 	_, cv.msg.Visibility = cv.visibility.GetCurrentOption()
 	cv.exitVisibility()
+}
+
+func (cv *ComposeView) exitFormat() {
+	cv.tutView.tut.App.SetInputCapture(cv.tutView.Input)
+	cv.tutView.tut.App.SetFocus(cv.content)
+}
+
+func (cv *ComposeView) formatSelected(s string, index int) {
+	if index >= 0 && index < len(contentTypes) {
+		cv.msg.ContentType = contentTypes[index]
+	}
+	cv.exitFormat()
 }
 
 func (cv *ComposeView) FocusVisibility() {
@@ -616,11 +640,6 @@ func (cv *ComposeView) formatInput(event *tcell.EventKey) *tcell.EventKey {
 		return nil
 	}
 	return event
-}
-
-func (cv *ComposeView) exitFormat() {
-	cv.tutView.tut.App.SetInputCapture(cv.tutView.Input)
-	cv.tutView.tut.App.SetFocus(cv.content)
 }
 
 func (cv *ComposeView) FocusFormat() {
