@@ -8,7 +8,6 @@ type ConfigTOML struct {
 	OpenCustom         OpenCustomTOML    `toml:"open-custom"`
 	NotificationConfig NotificationsTOML `toml:"desktop-notification"`
 	Input              InputTOML         `toml:"input"`
-	DefaultContentType string 			 `toml:"default-content-type"` // e.g. "text/plain" or "text/markdown"
 }
 
 type GeneralTOML struct {

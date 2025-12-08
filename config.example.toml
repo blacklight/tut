@@ -129,6 +129,10 @@ leader-key=""
 # default=1000
 leader-timeout=1000
 
+# If the backend supports it (e.g. Pleroma, Akkoma and Friendica), you can set
+# the default content type for toots here (usually text/plain or text/markdown).
+default-content-type="text/plain"
+
 # [[general.timelines]]
 # Timelines adds panes of feeds. You can customize the number of feeds, what
 # they should show and the key to activate them.
