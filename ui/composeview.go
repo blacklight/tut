@@ -86,25 +86,6 @@ func NewComposeView(tv *TutView) *ComposeView {
 		msg: &msgToot{},
 	}
 
-	// set default based on config (if present) otherwise default to text/plain
-	if tv.tut.Config != nil && tv.tut.Config.General.DefaultContentType != "" {
-		cv.msg.ContentType = tv.tut.Config.General.DefaultContentType
-		var ctIndex int = -1
-		for i, ct := range contentTypes {
-			if cv.msg.ContentType == ct {
-				ctIndex = i
-				break
-			}
-		}
-
-		if ctIndex >= 0 {
-			cv.format.SetCurrentOption(ctIndex)
-		}
-	} else {
-		cv.msg.ContentType = "text/plain"
-		cv.format.SetCurrentOption(0)
-	}
-
 	cv.content.SetDynamicColors(true)
 	cv.View = newComposeUI(cv)
 	return cv
