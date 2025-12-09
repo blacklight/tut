@@ -842,6 +842,7 @@ func parseGeneral(cfg GeneralTOML) General {
 	general.ShowBoostedUser = NilDefaultBool(cfg.ShowBoostedUser, def.ShowBoostedUser)
 	general.DynamicTimelineName = NilDefaultBool(cfg.DynamicTimelineName, def.DynamicTimelineName)
 	general.CommandsInNewPane = NilDefaultBool(cfg.CommandsInNewPane, def.CommandsInNewPane)
+	general.DefaultContentType = NilDefaultString(cfg.DefaultContentType, def.DefaultContentType)
 
 	lp := NilDefaultString(cfg.ListPlacement, def.ListPlacement)
 	switch lp {

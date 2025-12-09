@@ -38,7 +38,7 @@ type GeneralTOML struct {
 	ShowBoostedUser     *bool               `toml:"show-boosted-user"`
 	DynamicTimelineName *bool               `toml:"dynamic-timeline-name"`
 	CommandsInNewPane   *bool               `toml:"commands-in-new-pane"`
-	DefaultContentType  string 				`toml:"default-content-type"`
+	DefaultContentType  *string				`toml:"default-content-type"`
 }
 
 type TimelineTOML struct {

@@ -43,6 +43,7 @@ var ConfigDefault = ConfigTOML{
 		TerminalTitle:       ip(0),
 		LeaderKey:           sp(""),
 		LeaderTimeout:       ip64(1000),
+		DefaultContentType:  sp("text/plain"),
 		NotificationsToHide: &[]string{},
 		Timelines: &[]TimelineTOML{
 			{
