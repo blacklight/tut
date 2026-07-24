@@ -9,10 +9,10 @@ import (
 	"strings"
 	"time"
 
-	"github.com/blacklight/go-mastodon"
 	"github.com/RasmusLindroth/tut/api"
 	"github.com/RasmusLindroth/tut/config"
 	"github.com/RasmusLindroth/tut/util"
+	"github.com/blacklight/go-mastodon"
 	"github.com/gdamore/tcell/v2"
 	"github.com/rivo/tview"
 	"github.com/rivo/uniseg"
@@ -480,19 +480,22 @@ func (cv *ComposeView) UpdateContent() {
 	var outputHead string
 	var output string
 
-	if cv.msg.Reply != nil || cv.msg.Quote != nil {
+	if cv.msg.Reply != nil {
 		var acct string
 		if cv.msg.Reply.Account.DisplayName != "" {
 			acct = fmt.Sprintf("%s (%s)", cv.msg.Reply.Account.DisplayName, cv.msg.Reply.Account.Acct)
 		} else {
 			acct = cv.msg.Reply.Account.Acct
 		}
-	    if cv.msg.Reply != nil {
-		    outputHead += subtleColor + "Replying to " + tview.Escape(acct) + "\n" + normal
+		outputHead += subtleColor + "Replying to " + tview.Escape(acct) + "\n" + normal
+	} else if cv.msg.Quote != nil {
+		var acct string
+		if cv.msg.Quote.Account.DisplayName != "" {
+			acct = fmt.Sprintf("%s (%s)", cv.msg.Quote.Account.DisplayName, cv.msg.Quote.Account.Acct)
+		} else {
+			acct = cv.msg.Quote.Account.Acct
 		}
-        if cv.msg.Quote != nil {
-		    outputHead += subtleColor + "Quoting " + tview.Escape(acct) + "\n" + normal
-        }
+		outputHead += subtleColor + "Quoting " + tview.Escape(acct) + "\n" + normal
 	}
 	if cv.msg.CWText != "" && !cv.msg.Sensitive {
 		outputHead += warningColor + "You have entered content warning text, but haven't set an content warning. Do it by pressing " + tview.Escape("[T]") + "\n\n" + normal
@@ -691,7 +694,7 @@ func (cv *ComposeView) Post() {
 	sendText := strings.TrimSpace(toot.Text)
 	sendCW := strings.TrimSpace(toot.CWText)
 	send := mastodon.Toot{
-		Status: sendText,
+		Status:      sendText,
 		InReplyToID: "",
 		QuoteID:     nil,
 		MediaIDs:    []mastodon.ID{},
