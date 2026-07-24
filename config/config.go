@@ -467,6 +467,7 @@ type Input struct {
 	StatusReply        Key
 	StatusBookmark     Key
 	StatusThread       Key
+	StatusQuote        Key
 	StatusUser         Key
 	StatusViewFocus    Key
 	StatusYank         Key
@@ -1318,6 +1319,7 @@ func parseInput(cfg InputTOML) Input {
 	ic.StatusReply = inputOrDef("status-reply", cfg.StatusReply, def.StatusReply, false)
 	ic.StatusBookmark = inputOrDef("status-bookmark", cfg.StatusBookmark, def.StatusBookmark, true)
 	ic.StatusThread = inputOrDef("status-thread", cfg.StatusThread, def.StatusThread, false)
+	ic.StatusQuote = inputOrDef("status-quote", cfg.StatusQuote, def.StatusQuote, false)
 	ic.StatusUser = inputOrDef("status-user", cfg.StatusUser, def.StatusUser, false)
 	ic.StatusViewFocus = inputOrDef("status-view-focus", cfg.StatusViewFocus, def.StatusViewFocus, false)
 	ic.StatusYank = inputOrDef("status-yank", cfg.StatusYank, def.StatusYank, false)

@@ -1,10 +1,12 @@
 package ui
 
 import (
+	"fmt"
 	"log"
 
 	"github.com/blacklight/go-mastodon"
 	"github.com/RasmusLindroth/tut/api"
+	"github.com/RasmusLindroth/tut/util"
 )
 
 type PageFocusAt uint
@@ -190,6 +192,15 @@ func (tv *TutView) InitPost(status *mastodon.Status, original *mastodon.Status) 
 	err := tv.ComposeView.SetStatus(status, original)
 	if err == nil {
 		tv.SetPage(ComposeFocus)
+	}
+}
+
+func (tv *TutView) InitQuote(status *mastodon.Status) {
+	err := tv.ComposeView.SetQuote(util.StatusOrReblog(status))
+	if err == nil {
+		tv.SetPage(ComposeFocus)
+	} else {
+		tv.ShowError(fmt.Sprintf("Couldn't quote toot. Error: %v\n", err))
 	}
 }
 

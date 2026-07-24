@@ -65,10 +65,20 @@
 {{ Color .Style.Text }}{{ Flags "i" }}{{ .Toot.Card.URL }}{{ Flags "-" }}
 {{ end }}
 {{ end }}
+{{- if .Toot.HasQuote }}
+{{ Color .Style.Subtle }}{{ Flags "b" }}Quote{{ if ne .Toot.QuoteState "" }} ({{ .Toot.QuoteState }}){{ end }}{{ Flags "-" }}
+{{ if ne .Toot.QuoteAccount "" }}{{ if ne .Toot.QuoteDisplayName "" }}{{ Color .Style.TextSpecial2 }}{{ .Toot.QuoteDisplayName }}{{ Color .Style.TextSpecial1 }} ({{ .Toot.QuoteAccount }})
+{{ else }}{{ Color .Style.TextSpecial2 }}{{ .Toot.QuoteAccount }}
+{{ end }}{{ end }}
+{{ if .Toot.QuoteSpoiler }}{{ Color .Style.Text }}{{ .Toot.QuoteCWText }}
+{{ end }}{{ Color .Style.Text }}{{ .Toot.QuoteText }}
+{{ end }}
 {{ Color .Style.Subtle }}Replies
 {{- Color .Style.TextSpecial1 }} {{ .Toot.Replies }}
 {{- Color .Style.Subtle }} Boosts
 {{- Color .Style.TextSpecial1 }} {{ .Toot.Boosts }}
 {{- Color .Style.Subtle }} Favorites
 {{- Color .Style.TextSpecial1 }} {{ .Toot.Favorites }}
+{{- Color .Style.Subtle }} Quotes
+{{- Color .Style.TextSpecial1 }} {{ .Toot.Quotes }}
 {{- Color .Style.TextSpecial2 }} {{ .Toot.Lang }}

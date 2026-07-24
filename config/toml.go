@@ -196,6 +196,7 @@ type InputTOML struct {
 	StatusReply        *KeyHintTOML `toml:"status-reply"`
 	StatusBookmark     *KeyHintTOML `toml:"status-bookmark"`
 	StatusThread       *KeyHintTOML `toml:"status-thread"`
+	StatusQuote        *KeyHintTOML `toml:"status-quote"`
 	StatusUser         *KeyHintTOML `toml:"status-user"`
 	StatusViewFocus    *KeyHintTOML `toml:"status-view-focus"`
 	StatusYank         *KeyHintTOML `toml:"status-yank"`

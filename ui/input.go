@@ -582,6 +582,10 @@ func (tv *TutView) InputStatus(event *tcell.EventKey, item api.Item, status *mas
 		})), false)
 		return nil
 	}
+	if tv.tut.Config.Input.StatusQuote.Match(event.Key(), event.Rune()) {
+		tv.InitQuote(status)
+		return nil
+	}
 	if tv.tut.Config.Input.StatusUser.Match(event.Key(), event.Rune()) {
 		id := sr.Account.ID
 		if nAcc != nil {

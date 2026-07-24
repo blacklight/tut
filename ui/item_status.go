@@ -35,9 +35,20 @@ type Toot struct {
 	Replies            int
 	Boosts             int
 	Favorites          int
+	Quotes             int
 	Edited             bool
 	Lang               string
 	Controls           string
+	HasQuote           bool
+	QuoteState         string
+	QuoteID            string
+	QuoteDisplayName   string
+	QuoteAccount       string
+	QuoteText          string
+	QuoteSpoiler       bool
+	QuoteCWText        string
+	QuoteShowSpoiler   bool
+	QuoteCWlabel       string
 }
 
 type Poll struct {
@@ -200,6 +211,28 @@ func drawStatus(tv *TutView, item api.Item, status *mastodon.Status, main *tview
 	toot.Replies = int(status.RepliesCount)
 	toot.Boosts = int(status.ReblogsCount)
 	toot.Favorites = int(status.FavouritesCount)
+	toot.Quotes = int(status.QuotesCount)
+
+	if status.Quote != nil {
+		toot.HasQuote = true
+		toot.QuoteState = status.Quote.State
+		toot.QuoteID = string(status.Quote.QuotedStatusID)
+		if status.Quote.QuotedStatus != nil {
+			qs := status.Quote.QuotedStatus
+			toot.QuoteDisplayName = tview.Escape(qs.Account.DisplayName)
+			toot.QuoteAccount = tview.Escape(qs.Account.Acct)
+			if qs.Sensitive {
+				toot.QuoteSpoiler = true
+				strippedSpoiler, _ := util.CleanHTMLStyled(qs.SpoilerText)
+				toot.QuoteCWText = strippedSpoiler
+				toot.QuoteShowSpoiler = true
+			}
+			strippedContent, _ := util.CleanHTMLStyled(qs.Content)
+			toot.QuoteText = strippedContent
+		} else {
+			toot.QuoteText = fmt.Sprintf("Quote state: %s", status.Quote.State)
+		}
+	}
 
 	if main != nil {
 		main.ScrollToBeginning()
@@ -229,6 +262,7 @@ func drawStatus(tv *TutView, item api.Item, status *mastodon.Status, main *tview
 	}
 	if !isHistory {
 		info = append(info, NewControl(tv.tut.Config, tv.tut.Config.Input.StatusThread, true))
+		info = append(info, NewControl(tv.tut.Config, tv.tut.Config.Input.StatusQuote, true))
 		info = append(info, NewControl(tv.tut.Config, tv.tut.Config.Input.StatusReply, true))
 		info = append(info, NewControl(tv.tut.Config, tv.tut.Config.Input.StatusViewFocus, true))
 		info = append(info, NewControl(tv.tut.Config, tv.tut.Config.Input.StatusUser, true))
