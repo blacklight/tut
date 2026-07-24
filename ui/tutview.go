@@ -71,6 +71,7 @@ type TutView struct {
 	HelpView       *HelpView
 	EditorView     *EditorView
 	ModalView      *ModalView
+	SearchView     *SearchView
 
 	FileList []string
 }
@@ -257,6 +258,7 @@ func (tv *TutView) loggedIn(acc auth.Account) {
 	tv.HelpView = NewHelpView(tv)
 	tv.EditorView = NewEditorView(tv)
 	tv.ModalView = NewModalView(tv)
+	tv.SearchView = NewSearchView(tv)
 
 	tv.View.AddPage("main", tv.MainView.View, true, false)
 	tv.View.AddPage("link", tv.LinkView.View, true, false)
@@ -267,6 +269,7 @@ func (tv *TutView) loggedIn(acc auth.Account) {
 	tv.View.AddPage("poll", tv.PollView.View, true, false)
 	tv.View.AddPage("preference", tv.PreferenceView.View, true, false)
 	tv.View.AddPage("modal", tv.ModalView.View, true, false)
+	tv.View.AddPage("search", tv.SearchView.View, true, false)
 	tv.SetPage(MainFocus)
 }
 

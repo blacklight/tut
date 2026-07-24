@@ -145,6 +145,15 @@ func (tv *TutView) TagCommand(tag string) {
 		tv.tut.Config.General.CommandsInNewPane)
 }
 
+func (tv *TutView) SearchCommand(query string) {
+	tv.Timeline.AddFeed(
+		NewSearchFeed(tv, config.NewTimeline(config.Timeline{
+			FeedType:  config.Search,
+			Subaction: query,
+		})),
+		tv.tut.Config.General.CommandsInNewPane)
+}
+
 func (tv *TutView) TagsCommand() {
 	tv.Timeline.AddFeed(
 		NewTagsFeed(tv, config.NewTimeline(config.Timeline{

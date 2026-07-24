@@ -110,6 +110,7 @@ const (
 	List
 	ListUsersIn
 	ListUsersAdd
+	Search
 )
 
 type NotificationToHide string
@@ -1002,6 +1003,9 @@ func parseGeneral(cfg GeneralTOML) General {
 				tl.FeedType = Lists
 			case "tag":
 				tl.FeedType = Tag
+				tl.Subaction = NilDefaultString(l.Data, sp(""))
+			case "search":
+				tl.FeedType = Search
 				tl.Subaction = NilDefaultString(l.Data, sp(""))
 			default:
 				fmt.Printf("timeline %s is invalid\n", *l.Type)

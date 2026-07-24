@@ -327,6 +327,25 @@ func NewUserSearchFeed(tv *TutView, tl *config.Timeline) *Feed {
 	return fd
 }
 
+func NewSearchFeed(tv *TutView, tl *config.Timeline) *Feed {
+	f := feed.NewSearch(tv.tut.Client, tv.tut.Config, tl.Subaction)
+	f.LoadNewer()
+	fd := &Feed{
+		tutView:  tv,
+		Data:     f,
+		List:     NewFeedList(tv.tut, f.StickyCount()),
+		Content:  NewFeedContent(tv.tut),
+		Timeline: tl,
+	}
+	for _, s := range f.List() {
+		main, symbol := DrawListItem(tv.tut.Config, s)
+		fd.List.AddItem(main, symbol, s.ID())
+	}
+	fd.DrawContent()
+
+	return fd
+}
+
 func NewTagFeed(tv *TutView, tl *config.Timeline) *Feed {
 	f := feed.NewTag(tv.tut.Client, tv.tut.Config, tl.Subaction, tl.HideBoosts, tl.HideReplies)
 	f.LoadNewer()

@@ -61,6 +61,8 @@ func CreateFeed(tv *TutView, f *config.Timeline) *Feed {
 		nf = NewListsFeed(tv, f)
 	case config.Tag:
 		nf = NewTagFeed(tv, f)
+	case config.Search:
+		nf = NewSearchFeed(tv, f)
 	default:
 		fmt.Println("Invalid feed")
 		tv.CleanExit(1)
@@ -126,6 +128,8 @@ func (tl *Timeline) AddFeed(f *Feed, newPane bool) {
 		case config.User:
 			f.Timeline.Name = fmt.Sprintf("@%s", name)
 		case config.UserList:
+			f.Timeline.Name = fmt.Sprintf("Search %s", name)
+		case config.Search:
 			f.Timeline.Name = fmt.Sprintf("Search %s", name)
 		case config.Conversations:
 			f.Timeline.Name = "Direct"
@@ -345,6 +349,8 @@ func (tl *Timeline) GetTitle() string {
 		ct = fmt.Sprintf("user %s", name)
 	case config.UserList:
 		ct = fmt.Sprintf("user search %s", name)
+	case config.Search:
+		ct = fmt.Sprintf("search %s", name)
 	case config.Conversations:
 		ct = "direct"
 	case config.Lists:

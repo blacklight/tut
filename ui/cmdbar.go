@@ -79,6 +79,19 @@ func (c *CmdBar) DoneFunc(key tcell.Key) {
 	case ":bookmarks", ":saved":
 		c.tutView.BookmarksCommand()
 		c.Back()
+	case ":search":
+		if len(parts) < 2 {
+			c.tutView.PageFocus = MainFocus
+			c.tutView.SetPage(SearchFocus)
+			c.ClearInput()
+			c.View.Autocomplete()
+			break
+		}
+		query := strings.TrimSpace(strings.Join(parts[1:], " "))
+		if len(query) > 0 {
+			c.tutView.SearchCommand(query)
+		}
+		c.Back()
 	case ":favorited":
 		c.tutView.FavoritedCommand()
 		c.Back()
@@ -294,7 +307,7 @@ func (c *CmdBar) DoneFunc(key tcell.Key) {
 
 func (c *CmdBar) Autocomplete(curr string) []string {
 	var entries []string
-	words := strings.Split(":blocking,:boosts,:bookmarks,:clear-notifications,:clear-temp,:close-pane,:compose,:favorites,:favorited,:follow-tag,:followers,:following,:help,:h,:history,:move-pane,:next-acct,:lists,:list-placement,:list-split,:login,:muting,:newer,:preferences,:prev-acct,:profile,:proportions,:refetch,:requests,:saved,:stick-to-top,:tag,:timeline,:tl,:unfollow-tag,:user,:pane,:quit,:q", ",")
+	words := strings.Split(":blocking,:boosts,:bookmarks,:clear-notifications,:clear-temp,:close-pane,:compose,:favorites,:favorited,:follow-tag,:followers,:following,:help,:h,:history,:move-pane,:next-acct,:lists,:list-placement,:list-split,:login,:muting,:newer,:preferences,:prev-acct,:profile,:proportions,:refetch,:requests,:saved,:search,:stick-to-top,:tag,:timeline,:tl,:unfollow-tag,:user,:pane,:quit,:q", ",")
 	if curr == "" {
 		return entries
 	}

@@ -984,6 +984,22 @@ func NewUserSearch(ac *api.AccountClient, cnf *config.Config, search string) *Fe
 	return feed
 }
 
+func NewSearch(ac *api.AccountClient, cnf *config.Config, query string) *Feed {
+	feed := newFeed(ac, config.Search, cnf, false, false)
+	feed.name = query
+	once := true
+	feed.loadNewer = func() {
+		if once {
+			feed.normalEmpty(func() ([]api.Item, error) {
+				return ac.GetSearch(query)
+			})
+		}
+		once = false
+	}
+
+	return feed
+}
+
 func NewUserProfile(ac *api.AccountClient, cnf *config.Config, user *api.User) *Feed {
 	feed := newFeed(ac, config.User, cnf, false, false)
 	feed.name = user.Data.Acct
