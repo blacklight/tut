@@ -198,6 +198,45 @@ func (ac *AccountClient) GetUsers(search string) ([]Item, error) {
 	return items, nil
 }
 
+func (ac *AccountClient) GetSearch(query string) ([]Item, error) {
+	var items []Item
+	res, err := ac.Client.Search(context.Background(), query, true)
+	if err != nil {
+		return items, err
+	}
+	if len(res.Accounts) > 0 {
+		ids := make([]string, len(res.Accounts))
+		for i, a := range res.Accounts {
+			ids[i] = string(a.ID)
+		}
+		rel, err := ac.Client.GetAccountRelationships(context.Background(), ids)
+		if err != nil {
+			return items, err
+		}
+		relMap := make(map[mastodon.ID]*mastodon.Relationship, len(rel))
+		for _, r := range rel {
+			relMap[r.ID] = r
+		}
+		for _, a := range res.Accounts {
+			r := relMap[a.ID]
+			if r == nil {
+				r = &mastodon.Relationship{ID: a.ID}
+			}
+			items = append(items, NewUserItem(&User{
+				Data:     a,
+				Relation: r,
+			}, false))
+		}
+	}
+	for _, s := range res.Statuses {
+		items = append(items, NewStatusItem(s, false))
+	}
+	for _, t := range res.Hashtags {
+		items = append(items, NewTagItem(t))
+	}
+	return items, nil
+}
+
 func (ac *AccountClient) GetBoostsStatus(pg *mastodon.Pagination, id mastodon.ID) ([]Item, error) {
 	fn := func() ([]*mastodon.Account, error) {
 		return ac.Client.GetRebloggedBy(context.Background(), id, pg)

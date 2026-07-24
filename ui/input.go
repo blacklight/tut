@@ -15,7 +15,7 @@ import (
 )
 
 func (tv *TutView) Input(event *tcell.EventKey) *tcell.EventKey {
-	if tv.PageFocus != LoginFocus {
+	if tv.PageFocus != LoginFocus && tv.PageFocus != SearchFocus {
 		switch event.Rune() {
 		case ':':
 			tv.SetPage(CmdFocus)
@@ -23,11 +23,15 @@ func (tv *TutView) Input(event *tcell.EventKey) *tcell.EventKey {
 			tv.SetPage(HelpFocus)
 		}
 	}
-	if tv.PageFocus != LoginFocus && tv.PageFocus != CmdFocus {
+	if tv.PageFocus != LoginFocus && tv.PageFocus != CmdFocus && tv.PageFocus != SearchFocus {
 		event = tv.InputLeaderKey(event)
 		if event == nil {
 			return nil
 		}
+	}
+
+	if tv.PageFocus == SearchFocus {
+		return event
 	}
 
 	if tv.tut.Config.Input.MainNextAccount.Match(event.Key(), event.Rune()) {
@@ -66,6 +70,8 @@ func (tv *TutView) Input(event *tcell.EventKey) *tcell.EventKey {
 		return tv.InputPreference(event)
 	case EditorFocus:
 		return tv.InputEditorView(event)
+	case SearchFocus:
+		return event
 	default:
 		return event
 	}
