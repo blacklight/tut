@@ -72,6 +72,9 @@ type TutView struct {
 	EditorView     *EditorView
 	ModalView      *ModalView
 
+	paneSearchTerm  string
+	paneSearchIndex int
+
 	FileList []string
 }
 

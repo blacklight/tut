@@ -24,6 +24,7 @@ const (
 	EditorFocus
 	PollFocus
 	PreferenceFocus
+	PaneSearchFocus
 )
 
 func (tv *TutView) GetCurrentFeed() *Feed {
@@ -160,6 +161,11 @@ func (tv *TutView) SetPage(f PageFocusAt) {
 		tv.tut.App.SetFocus(tv.View)
 		tv.Shared.Bottom.StatusBar.SetMode(PreferenceMode)
 		tv.Shared.Top.SetText("preferences")
+	case PaneSearchFocus:
+		tv.PageFocus = PaneSearchFocus
+		tv.tut.App.SetFocus(tv.Shared.Bottom.Cmd.View)
+		tv.Shared.Bottom.StatusBar.SetMode(PaneSearchMode)
+		tv.Shared.Bottom.Cmd.SetPaneSearchInput()
 	}
 	tv.ShouldSync()
 }
