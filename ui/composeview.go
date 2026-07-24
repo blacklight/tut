@@ -389,6 +389,11 @@ func (cv *ComposeView) SetQuote(quote *mastodon.Status) error {
 	msg.Visibility = visibility
 	msg.Language = lang
 	msg.Text = ""
+	if cv.tutView.tut.Config != nil && cv.tutView.tut.Config.General.DefaultContentType != "" {
+		msg.ContentType = cv.tutView.tut.Config.General.DefaultContentType
+	} else {
+		msg.ContentType = "text/plain"
+	}
 	cv.msg = msg
 	return cv.initComposeUI()
 }
