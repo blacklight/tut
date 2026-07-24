@@ -73,6 +73,9 @@ type TutView struct {
 	ModalView      *ModalView
 	SearchView     *SearchView
 
+	paneSearchTerm  string
+	paneSearchIndex int
+
 	FileList []string
 }
 

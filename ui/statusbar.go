@@ -33,6 +33,7 @@ const (
 	VoteMode
 	PollMode
 	PreferenceMode
+	PaneSearchMode
 )
 
 func (sb *StatusBar) SetMode(m ViewMode) {
@@ -67,5 +68,7 @@ func (sb *StatusBar) SetMode(m ViewMode) {
 		sb.View.SetText("-- CREATE POLL --")
 	case PreferenceMode:
 		sb.View.SetText("-- PREFERENCES --")
+	case PaneSearchMode:
+		sb.View.SetText("-- SEARCH --")
 	}
 }

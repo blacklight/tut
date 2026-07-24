@@ -22,8 +22,12 @@ func (tv *TutView) Input(event *tcell.EventKey) *tcell.EventKey {
 		case '?':
 			tv.SetPage(HelpFocus)
 		}
+		if event.Rune() == '/' && (tv.PageFocus == MainFocus || tv.PageFocus == ViewFocus) {
+			tv.SetPage(PaneSearchFocus)
+			return nil
+		}
 	}
-	if tv.PageFocus != LoginFocus && tv.PageFocus != CmdFocus && tv.PageFocus != SearchFocus {
+	if tv.PageFocus != LoginFocus && tv.PageFocus != CmdFocus && tv.PageFocus != SearchFocus  && tv.PageFocus != PaneSearchFocus {
 		event = tv.InputLeaderKey(event)
 		if event == nil {
 			return nil
@@ -57,6 +61,8 @@ func (tv *TutView) Input(event *tcell.EventKey) *tcell.EventKey {
 	case LinkFocus:
 		return tv.InputLinkView(event)
 	case CmdFocus:
+		return tv.InputCmdView(event)
+	case PaneSearchFocus:
 		return tv.InputCmdView(event)
 	case MediaFocus:
 		return tv.InputMedia(event)
@@ -227,6 +233,14 @@ func (tv *TutView) InputLeaderKey(event *tcell.EventKey) *tcell.EventKey {
 }
 
 func (tv *TutView) InputMainView(event *tcell.EventKey) *tcell.EventKey {
+	if event.Rune() == 'n' && tv.paneSearchTerm != "" {
+		tv.NextPaneSearch(true)
+		return nil
+	}
+	if event.Rune() == 'N' && tv.paneSearchTerm != "" {
+		tv.NextPaneSearch(false)
+		return nil
+	}
 	switch tv.SubFocus {
 	case ListFocus:
 		return tv.InputMainViewFeed(event)
@@ -358,6 +372,14 @@ func (tv *TutView) InputHelp(event *tcell.EventKey) *tcell.EventKey {
 }
 
 func (tv *TutView) InputViewItem(event *tcell.EventKey) *tcell.EventKey {
+	if event.Rune() == 'n' && tv.paneSearchTerm != "" {
+		tv.NextPaneSearch(true)
+		return nil
+	}
+	if event.Rune() == 'N' && tv.paneSearchTerm != "" {
+		tv.NextPaneSearch(false)
+		return nil
+	}
 	if tv.tut.Config.Input.GlobalBack.Match(event.Key(), event.Rune()) ||
 		tv.tut.Config.Input.GlobalExit.Match(event.Key(), event.Rune()) {
 		tv.FocusMainNoHistory()

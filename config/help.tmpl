@@ -20,6 +20,12 @@ Explanation of the non obvious keys when viewing a toot
     {{ Color .Style.TextSpecial2 }}{{ Flags "b" }}o{{ Flags "-" }}{{ Color .Style.Text }} - open. Gives you a list of all URLs in the toot. Opens them in your default browser, if it's an user or tag they will be opened in tut
     {{ Color .Style.TextSpecial2 }}{{ Flags "b" }}m{{ Flags "-" }}{{ Color .Style.Text }} - media. Opens the media with xdg-open
 
+{{ Color .Style.Text }}{{ Flags "b" }}Search{{ Flags "-" }}
+
+    {{ Color .Style.TextSpecial2 }}{{ Flags "b" }}/{{ Flags "-" }}{{ Color .Style.Text }}<search-term> - Search for toots, users, or other items in the current pane. Press {{ Color .Style.TextSpecial2 }}{{ Flags "b" }}Enter{{ Flags "-" }}{{ Color .Style.Text }} to run the search.
+    {{ Color .Style.TextSpecial2 }}{{ Flags "b" }}n{{ Flags "-" }}{{ Color .Style.Text }} - Go to the next match
+    {{ Color .Style.TextSpecial2 }}{{ Flags "b" }}N{{ Flags "-" }}{{ Color .Style.Text }} - Go to the previous match
+
 {{ Color .Style.Text }}{{ Flags "b" }}Commands{{ Flags "-" }}
 
 All commands start with {{ Color .Style.TextSpecial2 }}{{ Flags "b" }}:{{ Flags "-" }}{{ Color .Style.Text }}. And you run the command by hitting {{ Color .Style.TextSpecial2 }}{{ Flags "b" }}Enter{{ Flags "-" }}{{ Color .Style.Text }}.

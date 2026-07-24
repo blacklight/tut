@@ -44,6 +44,11 @@ func (c *CmdBar) ClearInput() {
 	c.View.SetText("")
 }
 
+func (c *CmdBar) SetPaneSearchInput() {
+	c.View.SetFieldTextColor(c.tutView.tut.Config.Style.CommandText)
+	c.View.SetText("/")
+}
+
 func (c *CmdBar) Back() {
 	c.ClearInput()
 	c.View.Autocomplete()
@@ -57,6 +62,16 @@ func (c *CmdBar) DoneFunc(key tcell.Key) {
 	input := c.GetInput()
 	parts := strings.Split(input, " ")
 	if len(parts) == 0 {
+		return
+	}
+	if strings.HasPrefix(input, "/") {
+		term := strings.TrimSpace(input[1:])
+		if term != "" {
+			c.tutView.PaneSearchCommand(term)
+		} else {
+			c.tutView.NextPaneSearch(true)
+		}
+		c.Back()
 		return
 	}
 	switch parts[0] {

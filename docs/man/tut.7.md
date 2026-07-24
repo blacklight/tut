@@ -28,6 +28,12 @@ To change the keys look at tut(5) under the *INPUT* section.
 **o** = open. Gives you a list of all URLs in the toot. Opens them in your default browser, if it\'s an user or tag they will be opened in tut  
 **m** = media. Opens the media with xdg-open
 
+## Search
+
+**/** *search-term* = Search for toots, users, or other items in the current pane. Press *Enter* to run the search.  
+**n** = Go to the next match  
+**N** = Go to the previous match
+
 # Commands
 **:quit**
 : Exit tut
