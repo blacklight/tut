@@ -8,7 +8,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/RasmusLindroth/go-mastodon"
+	"github.com/blacklight/go-mastodon"
 	"github.com/RasmusLindroth/tut/api"
 	"github.com/RasmusLindroth/tut/config"
 	"github.com/RasmusLindroth/tut/util"
@@ -23,6 +23,7 @@ type msgToot struct {
 	Text          string
 	Reply         *mastodon.Status
 	Edit          *mastodon.Status
+	Quote         *mastodon.Status
 	MediaIDs      []mastodon.ID
 	Sensitive     bool
 	CWText        string
@@ -172,7 +173,7 @@ func (cv *ComposeView) SetControls(ctrl ComposeControls) {
 		items = append(items, NewControl(cv.tutView.tut.Config, cv.tutView.tut.Config.Input.ComposeMediaFocus, true))
 		items = append(items, NewControl(cv.tutView.tut.Config, cv.tutView.tut.Config.Input.ComposePoll, true))
 		items = append(items, NewControl(cv.tutView.tut.Config, cv.tutView.tut.Config.Input.ComposeLanguage, true))
-		if cv.msg.Reply != nil {
+		if cv.msg.Reply != nil || cv.msg.Quote != nil {
 			items = append(items, NewControl(cv.tutView.tut.Config, cv.tutView.tut.Config.Input.ComposeIncludeQuote, true))
 		}
 	case ComposeMedia:
@@ -256,6 +257,10 @@ func (cv *ComposeView) SetStatus(reply *mastodon.Status, edit *mastodon.Status) 
 	if cv.tutView.tut.Config.General.QuoteReply && edit == nil {
 		cv.IncludeQuote()
 	}
+	return cv.initComposeUI()
+}
+
+func (cv *ComposeView) initComposeUI() error {
 	cv.visibility.SetLabel("Visibility: ")
 	index := 0
 	for i, v := range visibilitiesStr {
@@ -286,6 +291,44 @@ func (cv *ComposeView) SetStatus(reply *mastodon.Status, edit *mastodon.Status) 
 	cv.UpdateContent()
 	cv.SetControls(ComposeNormal)
 	return nil
+}
+
+func (cv *ComposeView) SetQuote(quote *mastodon.Status) error {
+	if quote != nil && quote.Visibility == mastodon.VisibilityDirectMessage {
+		return fmt.Errorf("cannot quote a direct message")
+	}
+	cv.tutView.PollView.Reset()
+	cv.media.Reset()
+	cv.textAreaMain.SetText("", false)
+	cv.textAreaCW.SetText("", false)
+	msg := &msgToot{}
+	me := cv.tutView.tut.Client.Me
+	visibility := mastodon.VisibilityPublic
+	lang := ""
+	if me.Source != nil && me.Source.Privacy != nil {
+		visibility = *me.Source.Privacy
+	}
+	if me.Source != nil && me.Source.Language != nil {
+		lang = *me.Source.Language
+	}
+	if quote != nil {
+		if quote.Reblog != nil {
+			quote = quote.Reblog
+		}
+		msg.Quote = quote
+		if quote.Sensitive {
+			msg.Sensitive = true
+			msg.CWText = quote.SpoilerText
+		}
+		if visibilities[quote.Visibility] > visibilities[visibility] {
+			visibility = quote.Visibility
+		}
+	}
+	msg.Visibility = visibility
+	msg.Language = lang
+	msg.Text = ""
+	cv.msg = msg
+	return cv.initComposeUI()
 }
 
 func (cv *ComposeView) getAccs() string {
@@ -361,6 +404,14 @@ func (cv *ComposeView) UpdateContent() {
 			acct = cv.msg.Reply.Account.Acct
 		}
 		outputHead += subtleColor + "Replying to " + tview.Escape(acct) + "\n" + normal
+	} else if cv.msg.Quote != nil {
+		var acct string
+		if cv.msg.Quote.Account.DisplayName != "" {
+			acct = fmt.Sprintf("%s (%s)", cv.msg.Quote.Account.DisplayName, cv.msg.Quote.Account.Acct)
+		} else {
+			acct = cv.msg.Quote.Account.Acct
+		}
+		outputHead += subtleColor + "Quoting " + tview.Escape(acct) + "\n" + normal
 	}
 	if cv.msg.CWText != "" && !cv.msg.Sensitive {
 		outputHead += warningColor + "You have entered content warning text, but haven't set an content warning. Do it by pressing " + tview.Escape("[T]") + "\n\n" + normal
@@ -389,6 +440,9 @@ func (cv *ComposeView) IncludeQuote() {
 	}
 	t := cv.msg.Text
 	s := cv.msg.Reply
+	if s == nil {
+		s = cv.msg.Quote
+	}
 	if s == nil {
 		return
 	}
@@ -524,6 +578,10 @@ func (cv *ComposeView) Post() {
 	}
 	if toot.Edit != nil && toot.Edit.InReplyToID != nil {
 		send.InReplyToID = mastodon.ID(toot.Edit.InReplyToID.(string))
+	}
+	if toot.Quote != nil {
+		qid := toot.Quote.ID
+		send.QuotedStatusID = &qid
 	}
 	if toot.Sensitive {
 		send.Sensitive = true

@@ -8,7 +8,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/RasmusLindroth/go-mastodon"
+	"github.com/blacklight/go-mastodon"
 	"github.com/RasmusLindroth/tut/util"
 )
 

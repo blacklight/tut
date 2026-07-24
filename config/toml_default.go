@@ -236,6 +236,10 @@ var ConfigDefault = ConfigTOML{
 			Hint: sp("[T]hread"),
 			Keys: &[]string{"t", "T"},
 		},
+		StatusQuote: &KeyHintTOML{
+			Hint: sp("[X] Quote"),
+			Keys: &[]string{"x", "X"},
+		},
 		StatusUser: &KeyHintTOML{
 			Hint: sp("[U]ser"),
 			Keys: &[]string{"u", "U"},

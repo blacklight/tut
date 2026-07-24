@@ -6,7 +6,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/RasmusLindroth/go-mastodon"
+	"github.com/blacklight/go-mastodon"
 	"github.com/RasmusLindroth/tut/api"
 	"github.com/RasmusLindroth/tut/config"
 	"github.com/RasmusLindroth/tut/util"
@@ -552,6 +552,10 @@ func (tv *TutView) InputStatus(event *tcell.EventKey, item api.Item, status *mas
 		tv.Timeline.AddFeed(NewThreadFeed(tv, item, config.NewTimeline(config.Timeline{
 			FeedType: config.Thread,
 		})), false)
+		return nil
+	}
+	if tv.tut.Config.Input.StatusQuote.Match(event.Key(), event.Rune()) {
+		tv.InitQuote(status)
 		return nil
 	}
 	if tv.tut.Config.Input.StatusUser.Match(event.Key(), event.Rune()) {

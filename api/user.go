@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/RasmusLindroth/go-mastodon"
+	"github.com/blacklight/go-mastodon"
 )
 
 func (ac *AccountClient) GetUserByID(id mastodon.ID) (Item, error) {

@@ -1,6 +1,6 @@
 package api
 
-import "github.com/RasmusLindroth/go-mastodon"
+import "github.com/blacklight/go-mastodon"
 
 type RequestData struct {
 	MinID mastodon.ID

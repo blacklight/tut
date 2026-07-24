@@ -4,7 +4,7 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/RasmusLindroth/go-mastodon"
+	"github.com/blacklight/go-mastodon"
 	"github.com/RasmusLindroth/tut/config"
 	"github.com/RasmusLindroth/tut/util"
 	"golang.org/x/exp/slices"

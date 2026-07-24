@@ -3,7 +3,7 @@ package ui
 import (
 	"fmt"
 
-	"github.com/RasmusLindroth/go-mastodon"
+	"github.com/blacklight/go-mastodon"
 	"github.com/rivo/tview"
 )
 

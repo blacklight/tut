@@ -3,7 +3,7 @@ package api
 import (
 	"context"
 
-	"github.com/RasmusLindroth/go-mastodon"
+	"github.com/blacklight/go-mastodon"
 )
 
 func (ac *AccountClient) Vote(poll *mastodon.Poll, choices ...int) (*mastodon.Poll, error) {
