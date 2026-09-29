@@ -1,4 +1,4 @@
-module github.com/RasmusLindroth/tut
+module github.com/blacklight/tut
 
 go 1.18
 
