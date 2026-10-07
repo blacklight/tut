@@ -9,7 +9,7 @@ import (
 	"strings"
 
 	"github.com/blacklight/go-mastodon"
-	"github.com/RasmusLindroth/tut/util"
+	"github.com/blacklight/tut/util"
 )
 
 func AddAccount(ad *AccountData) *mastodon.Client {
@@ -46,7 +46,7 @@ func AddAccount(ad *AccountData) *mastodon.Client {
 		ClientName:   "tut-tui",
 		Scopes:       "read write follow",
 		RedirectURIs: "urn:ietf:wg:oauth:2.0:oob",
-		Website:      "https://github.com/RasmusLindroth/tut",
+		Website:      "https://github.com/blacklight/tut",
 	})
 	if err != nil {
 		fmt.Printf("Couldn't register the app. Error: %v\n\nExiting...\n", err)

@@ -3,7 +3,7 @@ package ui
 import (
 	"fmt"
 
-	"github.com/RasmusLindroth/tut/auth"
+	"github.com/blacklight/tut/auth"
 	"github.com/rivo/tview"
 )
 

@@ -9,8 +9,8 @@ import (
 	"time"
 
 	"github.com/blacklight/go-mastodon"
-	"github.com/RasmusLindroth/tut/api"
-	"github.com/RasmusLindroth/tut/config"
+	"github.com/blacklight/tut/api"
+	"github.com/blacklight/tut/config"
 	"golang.org/x/exp/slices"
 )
 

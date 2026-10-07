@@ -5,7 +5,7 @@ import (
 	"fmt"
 
 	"github.com/blacklight/go-mastodon"
-	"github.com/RasmusLindroth/tut/util"
+	"github.com/blacklight/tut/util"
 )
 
 type statusToggleFunc func(s *mastodon.Status) (*mastodon.Status, error)

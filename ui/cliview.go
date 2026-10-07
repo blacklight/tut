@@ -6,8 +6,8 @@ import (
 	"os"
 	"strings"
 
-	"github.com/RasmusLindroth/tut/config"
-	"github.com/RasmusLindroth/tut/util"
+	"github.com/blacklight/tut/config"
+	"github.com/blacklight/tut/util"
 	"github.com/spf13/pflag"
 )
 
@@ -87,12 +87,12 @@ func CliView(version string) (newUser bool, selectedUser string, confPath string
 
 		fmt.Print("Contact info for issues or questions:\n")
 		fmt.Printf("\t@tut@fosstodon.org\n\t@rasmus@mastodon.acc.sunet.se\n\trasmus@lindroth.xyz\n")
-		fmt.Printf("\thttps://github.com/RasmusLindroth/tut\n")
+		fmt.Printf("\thttps://github.com/blacklight/tut\n")
 		os.Exit(0)
 	}
 	if showVersion != nil && *showVersion {
 		fmt.Printf("tut version %s\n", version)
-		fmt.Printf("https://github.com/RasmusLindroth/tut\n")
+		fmt.Printf("https://github.com/blacklight/tut\n")
 		os.Exit(0)
 
 	}

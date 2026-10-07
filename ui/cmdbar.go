@@ -3,7 +3,7 @@ package ui
 import (
 	"strings"
 
-	"github.com/RasmusLindroth/tut/config"
+	"github.com/blacklight/tut/config"
 	"github.com/gdamore/tcell/v2"
 	"github.com/rivo/tview"
 )

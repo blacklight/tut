@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/RasmusLindroth/tut/config"
+	"github.com/blacklight/tut/config"
 )
 
 type FeedHolder struct {

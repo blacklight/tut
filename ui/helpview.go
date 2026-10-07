@@ -3,7 +3,7 @@ package ui
 import (
 	"bytes"
 
-	"github.com/RasmusLindroth/tut/config"
+	"github.com/blacklight/tut/config"
 	"github.com/rivo/tview"
 )
 

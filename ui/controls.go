@@ -1,7 +1,7 @@
 package ui
 
 import (
-	"github.com/RasmusLindroth/tut/config"
+	"github.com/blacklight/tut/config"
 	"github.com/gdamore/tcell/v2"
 )
 

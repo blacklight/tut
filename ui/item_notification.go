@@ -3,9 +3,9 @@ package ui
 import (
 	"fmt"
 
-	"github.com/RasmusLindroth/tut/api"
-	"github.com/RasmusLindroth/tut/config"
-	"github.com/RasmusLindroth/tut/util"
+	"github.com/blacklight/tut/api"
+	"github.com/blacklight/tut/config"
+	"github.com/blacklight/tut/util"
 	"github.com/rivo/tview"
 )
 
@@ -47,7 +47,7 @@ func drawNotification(tv *TutView, item api.Item, notification *api.Notification
 	default:
 		controls.Clear()
 		text := fmt.Sprintf("%s\n", config.SublteText(tv.tut.Config,
-			fmt.Sprintf("Notification \"%s\" is not implemented. Open an issue at https://github.com/RasmusLindroth/tut",
+			fmt.Sprintf("Notification \"%s\" is not implemented. Open an issue at https://github.com/blacklight/tut",
 				notification.Item.Type),
 		))
 		main.SetText(text)

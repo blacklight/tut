@@ -12,7 +12,7 @@ import (
 	"sync"
 	"text/template"
 
-	"github.com/RasmusLindroth/tut/util"
+	"github.com/blacklight/tut/util"
 	"github.com/gdamore/tcell/v2"
 	"github.com/gobwas/glob"
 	"github.com/pelletier/go-toml/v2"
@@ -1398,7 +1398,7 @@ func parseConfig(filepath string, cnfPath string, cnfDir string) (Config, error)
 		fmt.Print("Error while parsing your config:\n")
 		fmt.Println(err)
 		fmt.Println("\nThis message can be a bit unclear. If you don't understand the error you can open up an issue and I'll try to help you. Please post your config.toml in the issue.")
-		fmt.Println("https://github.com/RasmusLindroth/tut/issues")
+		fmt.Println("https://github.com/blacklight/tut/issues")
 		os.Exit(1)
 	}
 	f.Close()

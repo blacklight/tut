@@ -3,7 +3,7 @@ package auth
 import (
 	"log"
 
-	"github.com/RasmusLindroth/tut/util"
+	"github.com/blacklight/tut/util"
 )
 
 func StartAuth(newUser bool) *AccountData {

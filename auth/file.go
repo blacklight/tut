@@ -6,7 +6,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/RasmusLindroth/tut/util"
+	"github.com/blacklight/tut/util"
 	"github.com/pelletier/go-toml/v2"
 )
 

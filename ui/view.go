@@ -5,8 +5,8 @@ import (
 	"log"
 
 	"github.com/blacklight/go-mastodon"
-	"github.com/RasmusLindroth/tut/api"
-	"github.com/RasmusLindroth/tut/util"
+	"github.com/blacklight/tut/api"
+	"github.com/blacklight/tut/util"
 )
 
 type PageFocusAt uint

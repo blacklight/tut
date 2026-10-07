@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/RasmusLindroth/tut/api"
-	"github.com/RasmusLindroth/tut/config"
-	"github.com/RasmusLindroth/tut/util"
+	"github.com/blacklight/tut/api"
+	"github.com/blacklight/tut/config"
+	"github.com/blacklight/tut/util"
 	"github.com/rivo/tview"
 )
 

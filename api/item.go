@@ -5,8 +5,8 @@ import (
 	"sync"
 
 	"github.com/blacklight/go-mastodon"
-	"github.com/RasmusLindroth/tut/config"
-	"github.com/RasmusLindroth/tut/util"
+	"github.com/blacklight/tut/config"
+	"github.com/blacklight/tut/util"
 	"golang.org/x/exp/slices"
 )
 

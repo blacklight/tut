@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"net/url"
 
-	"github.com/RasmusLindroth/tut/util"
+	"github.com/blacklight/tut/util"
 	"github.com/rivo/tview"
 )
 

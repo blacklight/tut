@@ -3,10 +3,10 @@ package main
 import (
 	"strings"
 
-	"github.com/RasmusLindroth/tut/auth"
-	"github.com/RasmusLindroth/tut/config"
-	"github.com/RasmusLindroth/tut/ui"
-	"github.com/RasmusLindroth/tut/util"
+	"github.com/blacklight/tut/auth"
+	"github.com/blacklight/tut/config"
+	"github.com/blacklight/tut/ui"
+	"github.com/blacklight/tut/util"
 	"github.com/rivo/tview"
 )
 

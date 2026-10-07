@@ -5,7 +5,7 @@ import (
 	"strings"
 
 	"github.com/blacklight/go-mastodon"
-	"github.com/RasmusLindroth/tut/config"
+	"github.com/blacklight/tut/config"
 )
 
 type TimelineType uint
